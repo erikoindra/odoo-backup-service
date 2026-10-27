@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Container entrypoint for odoo-docker-backup.
+# Container entrypoint for odoo-backup-service.
 #   cron (default)  install the crontab from CRON_SCHEDULE and run crond in the foreground
 #   backup [...]    run one backup now and exit (e.g. docker run --rm IMAGE backup)
 #   anything else   exec it as-is (e.g. sh)
@@ -47,7 +47,7 @@ case "${1:-cron}" in
   cron)
     save_env
     install_crontab
-    log "odoo-docker-backup ${ODOO_BACKUP_VERSION:-dev}: schedule '${CRON_SCHEDULE:-0 2 * * *}' (TZ=${TZ:-UTC}), retention ${RETENTION_DAYS:-3} day(s), target ${BACKUP_DIR:-/backups}"
+    log "odoo-backup-service ${ODOO_BACKUP_VERSION:-dev}: schedule '${CRON_SCHEDULE:-0 2 * * *}' (TZ=${TZ:-UTC}), retention ${RETENTION_DAYS:-3} day(s), target ${BACKUP_DIR:-/backups}"
     log "run a backup now with: docker exec <container> odoo-backup"
     if is_true "${RUN_ON_START:-false}"; then
       log "RUN_ON_START is on: running one backup now"

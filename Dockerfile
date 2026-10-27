@@ -7,7 +7,7 @@ FROM alpine:${ALPINE_VERSION}
 ARG PG_MAJOR=17
 ARG VERSION=dev
 
-LABEL org.opencontainers.image.title="odoo-docker-backup" \
+LABEL org.opencontainers.image.title="odoo-backup-service" \
       org.opencontainers.image.description="Scheduled Odoo backup: dump.sql + filestore in one Odoo-compatible zip" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.version="${VERSION}"

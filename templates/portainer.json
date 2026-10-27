@@ -1,0 +1,132 @@
+{
+  "version": "3",
+  "templates": [
+    {
+      "id": 1,
+      "type": 3,
+      "title": "Odoo Backup",
+      "description": "Daily Odoo backup: dump.sql + filestore in one Odoo-compatible zip, with retention",
+      "note": "Runs next to an existing Odoo stack. Find the values with tools/discover.sh from https://github.com/erikoindra/odoo-backup-service. Pick the image that matches your PostgreSQL server major version.",
+      "categories": [
+        "backup",
+        "odoo"
+      ],
+      "platform": "linux",
+      "repository": {
+        "url": "https://github.com/erikoindra/odoo-backup-service",
+        "stackfile": "stacks/odoo-backup/docker-compose.yml"
+      },
+      "env": [
+        {
+          "name": "IMAGE",
+          "label": "PostgreSQL server version",
+          "description": "pg_dump must match the server major version",
+          "select": [
+            {
+              "text": "PostgreSQL 18",
+              "value": "ghcr.io/erikoindra/odoo-backup-service:pg18"
+            },
+            {
+              "text": "PostgreSQL 17",
+              "value": "ghcr.io/erikoindra/odoo-backup-service:pg17",
+              "default": true
+            },
+            {
+              "text": "PostgreSQL 16",
+              "value": "ghcr.io/erikoindra/odoo-backup-service:pg16"
+            },
+            {
+              "text": "PostgreSQL 15",
+              "value": "ghcr.io/erikoindra/odoo-backup-service:pg15"
+            },
+            {
+              "text": "PostgreSQL 14",
+              "value": "ghcr.io/erikoindra/odoo-backup-service:pg14"
+            }
+          ]
+        },
+        {
+          "name": "PGHOST",
+          "label": "Database host",
+          "description": "PostgreSQL container name or alias on the database network"
+        },
+        {
+          "name": "PGPORT",
+          "label": "Database port",
+          "default": "5432"
+        },
+        {
+          "name": "PGUSER",
+          "label": "Database user",
+          "description": "The Odoo database user is enough (no superuser needed)"
+        },
+        {
+          "name": "PGPASSWORD",
+          "label": "Database password",
+          "description": "Write a $ as $$"
+        },
+        {
+          "name": "DB_NETWORK",
+          "label": "Database network",
+          "description": "Existing Docker network that the PostgreSQL container is on"
+        },
+        {
+          "name": "ODOO_DATA_VOLUME",
+          "label": "Odoo data volume",
+          "description": "Existing volume mounted at Odoo's data_dir (usually /var/lib/odoo)"
+        },
+        {
+          "name": "DB_NAME",
+          "label": "Database name(s)",
+          "description": "Comma separated. Empty: every database that has a filestore folder",
+          "default": ""
+        },
+        {
+          "name": "CRON_SCHEDULE",
+          "label": "Schedule (cron)",
+          "description": "minute hour day month weekday",
+          "default": "0 2 * * *"
+        },
+        {
+          "name": "TZ",
+          "label": "Time zone",
+          "description": "For the schedule and file names, e.g. Asia/Jakarta",
+          "default": "UTC"
+        },
+        {
+          "name": "RETENTION_DAYS",
+          "label": "Keep backups (days)",
+          "description": "0 keeps everything",
+          "default": "3"
+        },
+        {
+          "name": "BACKUP_VOLUME",
+          "label": "Backup volume",
+          "description": "Volume the zips are written to (created if missing)",
+          "default": "odoo-backups"
+        },
+        {
+          "name": "BACKUP_PREFIX",
+          "label": "File name prefix",
+          "description": "Optional, e.g. prod_",
+          "default": ""
+        },
+        {
+          "name": "RUN_ON_START",
+          "label": "Back up once on start",
+          "select": [
+            {
+              "text": "No",
+              "value": "false",
+              "default": true
+            },
+            {
+              "text": "Yes",
+              "value": "true"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

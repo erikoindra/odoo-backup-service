@@ -1,12 +1,14 @@
-# odoo-docker-backup as a Portainer stack.
+# odoo-backup-service: daily Odoo backup (dump.sql + filestore in one zip).
 #
-# Portainer > Stacks > Add stack > Web editor: paste this file, then fill
-# "Environment variables" (see stack.env.example) and deploy.
-# Nothing here is tied to one server: the DB host, network and volume names
-# all come from those variables.
+# Deploy with Portainer in any of these ways (see README.md):
+#   - App Templates: templates/portainer.json
+#   - Stacks > Add stack > Repository: stacks/odoo-backup/docker-compose.yml
+#   - Stacks > Add stack > Web editor: paste this file
+# Then set the variables (template: .env.example, or run tools/discover.sh).
+# Nothing here is tied to one server: DB host, network and volumes come from env.
 services:
   odoo-backup:
-    image: ${IMAGE:?set IMAGE, e.g. ghcr.io/OWNER/odoo-docker-backup:pg17}
+    image: ${IMAGE:-ghcr.io/erikoindra/odoo-backup-service:pg17}
     restart: unless-stopped
     environment:
       PGHOST: ${PGHOST:?set PGHOST (DB container name or alias on DB_NETWORK)}
@@ -20,6 +22,7 @@ services:
       TZ: ${TZ:-UTC}
       RUN_ON_START: ${RUN_ON_START:-false}
       MIN_FREE_MB: ${MIN_FREE_MB:-1024}
+      FILESTORE_ROOT: ${FILESTORE_ROOT:-/odoo-data/filestore}
     volumes:
       # Odoo's data_dir volume (mounted at /var/lib/odoo in the Odoo container).
       # Read-only: the backup can never change the live filestore.
