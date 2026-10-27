@@ -1,0 +1,46 @@
+# odoo-docker-backup as a Portainer stack.
+#
+# Portainer > Stacks > Add stack > Web editor: paste this file, then fill
+# "Environment variables" (see stack.env.example) and deploy.
+# Nothing here is tied to one server: the DB host, network and volume names
+# all come from those variables.
+services:
+  odoo-backup:
+    image: ${IMAGE:?set IMAGE, e.g. ghcr.io/OWNER/odoo-docker-backup:pg17}
+    restart: unless-stopped
+    environment:
+      PGHOST: ${PGHOST:?set PGHOST (DB container name or alias on DB_NETWORK)}
+      PGPORT: ${PGPORT:-5432}
+      PGUSER: ${PGUSER:?set PGUSER (the Odoo DB user is enough)}
+      PGPASSWORD: ${PGPASSWORD:?set PGPASSWORD}
+      DB_NAME: ${DB_NAME:-}
+      BACKUP_PREFIX: ${BACKUP_PREFIX:-}
+      RETENTION_DAYS: ${RETENTION_DAYS:-3}
+      CRON_SCHEDULE: "${CRON_SCHEDULE:-0 2 * * *}"
+      TZ: ${TZ:-UTC}
+      RUN_ON_START: ${RUN_ON_START:-false}
+      MIN_FREE_MB: ${MIN_FREE_MB:-1024}
+    volumes:
+      # Odoo's data_dir volume (mounted at /var/lib/odoo in the Odoo container).
+      # Read-only: the backup can never change the live filestore.
+      - odoo_data:/odoo-data:ro
+      - backups:/backups
+    networks:
+      - db_net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  odoo_data:
+    external: true
+    name: ${ODOO_DATA_VOLUME:?set ODOO_DATA_VOLUME (Odoo data_dir volume)}
+  backups:
+    name: ${BACKUP_VOLUME:-odoo-backups}
+
+networks:
+  db_net:
+    external: true
+    name: ${DB_NETWORK:?set DB_NETWORK (network the DB container is on)}

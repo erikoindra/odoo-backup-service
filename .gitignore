@@ -1,0 +1,5 @@
+# backups and real env files never belong in git
+*.zip
+.env
+*.env
+backups/
